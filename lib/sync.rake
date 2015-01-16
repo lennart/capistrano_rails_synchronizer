@@ -19,26 +19,59 @@ namespace :sync do
   end
 
   namespace :db do
-    desc "synchonize database"
-    task :dump_db do
+
+
+    desc "dump and copy database"
+    task :dump_copy do
+      puts "dumping and copying database"
+    end
+
+    desc "dump, copy and restore database" 
+    task :dump_restore do
+      puts "dumping, copying and restoring database"
+    end
+
+    desc "dump database"
+    task :dump do
       puts "dumping database"
     end
 
+    desc "copy database dump to other stage"
+    task :copy do
+      puts "copying database dump to other stage"
+    end
+
     desc "restore database"
-    task :restore_db do
+    task :restore do
       puts "restoring database"
     end
   end
 
   namespace :assets do
-    desc "synchronize assets"
-    task :pack_assets do
+
+    desc "pack and copy asets to other stage"
+    task :pack_copy do
+      puts "packing and copying"
+    end
+
+    desc "pack, copy and unpack assets on other stage"
+    task :pack_unpack do
+      puts "packing, copying and unpacking assets on other stage"
+    end
+
+    desc "pack assets"
+    task :pack do
       puts "packing assets"
     end
 
     desc "copy assets to other stage"
-    task :copy_assets do
+    task :copy do
       puts "copying assets"
+    end
+
+    desc "unpack assets on other stage"
+    task :unpack do
+      puts "unpacking assets"
     end
   end
 
