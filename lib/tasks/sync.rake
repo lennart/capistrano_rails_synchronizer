@@ -1,5 +1,9 @@
-require 'sync_stage'
 require 'pp'
+require 'synchronizer'
+
+include DB
+include Assets
+
 
 desc 'copies database and assets to destination'
 task :sync do
@@ -52,9 +56,11 @@ namespace :sync do
 
     desc 'copy database dump to other stage'
     task :copy do
-      on roles :db do
+      on roles :db do |host|
         invoke 'sync:db:dump'
-        info 'copying database dump to other stage'
+        execute 'hostname'
+        dump_db
+        info "copying database dump from #{host} to other stage #{capture(:uptime)}"
       end
     end
 
