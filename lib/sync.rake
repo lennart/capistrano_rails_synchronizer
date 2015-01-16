@@ -1,79 +1,97 @@
 require 'sync_stage'
 require 'pp'
 
+desc 'copies database and assets to destination'
+task :sync do
+  on roles :all do
+    info 'synchronizing data...'
+  end
+  invoke 'sync:db:copy'  
+  invoke 'sync:assets:copy'
+end
+
 namespace :sync do
   desc "syncronizes stages"
   task :env_to_remote do
-    #pp self.methods
-    pp env
-    pp fetch(:rails_env, :staging)
     from = fetch(:rails_env, :staging)
-    pp keys
     #worker = SyncStage::Worker.new(OpenStruct.new(app: rails_env))
     ask(:sync_to, stages.join('|'))
     if fetch(:sync_to).to_s == fetch(:rails_env).to_s
       raise "nonsense - synchronize yourself..."
     end
-    puts "yai - about to synchronize stage  '#{from}' to  '#{fetch(:sync_to)}'"
-    puts fetch(:current_path)
+    on roles [:db, :web] do
+      info "yai - about to synchronize stage  '#{from}' to  '#{fetch(:sync_to)}'"
+      puts fetch(:current_path)
+    end
+  end
+
+  desc 'dumps the database and copies the dump to destination stage'
+  task :db do
+    invoke 'sync:db:copy' 
+  end
+
+  desc 'tars assets and copies the archive to destination stage'
+  task :assets do
+    invoke 'sync:assets:copy'
+  end
+
+  desc 'restores assets and database on destination host'
+  task :restore do
+    invoke 'sync:db:restore'
+    invoke 'sync:assets:unpack'
   end
 
   namespace :db do
 
-
-    desc "dump and copy database"
-    task :dump_copy do
-      puts "dumping and copying database"
-    end
-
-    desc "dump, copy and restore database" 
-    task :dump_restore do
-      puts "dumping, copying and restoring database"
-    end
-
-    desc "dump database"
+    #desc 'dump database'
     task :dump do
-      puts "dumping database"
+      on roles :db do
+        info 'dumping database'
+      end
     end
 
-    desc "copy database dump to other stage"
+    desc 'copy database dump to other stage'
     task :copy do
-      puts "copying database dump to other stage"
+      on roles :db do
+        invoke 'sync:db:dump'
+        info 'copying database dump to other stage'
+      end
     end
 
-    desc "restore database"
+    desc 'restore database'
     task :restore do
-      puts "restoring database"
+      on roles :db do
+        invoke 'sync:db:copy'
+        info 'restoring database'
+      end
     end
+
   end
 
   namespace :assets do
 
-    desc "pack and copy asets to other stage"
-    task :pack_copy do
-      puts "packing and copying"
-    end
-
-    desc "pack, copy and unpack assets on other stage"
-    task :pack_unpack do
-      puts "packing, copying and unpacking assets on other stage"
-    end
-
-    desc "pack assets"
-    task :pack do
-      puts "packing assets"
-    end
-
-    desc "copy assets to other stage"
+    desc 'copies asets to destination'
     task :copy do
-      puts "copying assets"
+      on roles :web do
+        invoke 'sync:assets:pack'
+        info 'copying assets to destination'
+      end
     end
 
-    desc "unpack assets on other stage"
+    desc 'pack, copy and unpack assets on other stage'
     task :unpack do
-      puts "unpacking assets"
+      on roles :web do
+        invoke 'sync:assets:copy'
+        info 'unpacking assets'
+      end
+    end
+
+    #desc 'pack assets'
+    task :pack do
+      on roles :web do
+        info 'packing assets'
+      end
     end
   end
-
   
 end
