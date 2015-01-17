@@ -82,7 +82,7 @@ namespace :sync do
     #desc 'pack assets'
     task :pack do
       on roles :web do
-        info 'packing assets'
+        pack_assets
       end
     end
   end

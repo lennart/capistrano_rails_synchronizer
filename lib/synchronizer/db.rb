@@ -9,7 +9,7 @@ module DB
   private
 
   def pg_dump_cmd(opts)
-    str = "PGPASSWORD=#{opts.fetch('password')} pg_dump -U #{opts.fetch('username')} -h #{opts.fetch('host')} -Fc #{opts.fetch('database')} -f ~/#{opts.fetch('database')}.dump"
+    str = "PGPASSWORD=#{opts.fetch('password')} pg_dump -U #{opts.fetch('username')} -h #{opts.fetch('host')} -Fc #{opts.fetch('database')} -f #{shared_path}/#{opts.fetch('database')}.dump"
     str
   end
 
