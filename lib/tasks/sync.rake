@@ -3,31 +3,19 @@ require 'synchronizer'
 
 include DB
 include Assets
+include Helper
 
 
 desc 'copies database and assets to destination'
 task :sync do
   on roles :all do
-    info 'synchronizing data...'
+    info "synchronizing data to #{destination}"
   end
   invoke 'sync:db:copy'  
   invoke 'sync:assets:copy'
 end
 
 namespace :sync do
-  desc "syncronizes stages"
-  task :env_to_remote do
-    from = fetch(:rails_env, :staging)
-    #worker = SyncStage::Worker.new(OpenStruct.new(app: rails_env))
-    ask(:sync_to, stages.join('|'))
-    if fetch(:sync_to).to_s == fetch(:rails_env).to_s
-      raise "nonsense - synchronize yourself..."
-    end
-    on roles [:db, :web] do
-      info "yai - about to synchronize stage  '#{from}' to  '#{fetch(:sync_to)}'"
-      puts fetch(:current_path)
-    end
-  end
 
   desc 'dumps the database and copies the dump to destination stage'
   task :db do
@@ -58,9 +46,8 @@ namespace :sync do
     task :copy do
       on roles :db do |host|
         invoke 'sync:db:dump'
-        execute 'hostname'
         dump_db
-        info "copying database dump from #{host} to other stage #{capture(:uptime)}"
+        info "copying database dump from #{host} to other stage #{destination}"
       end
     end
 
@@ -80,7 +67,7 @@ namespace :sync do
     task :copy do
       on roles :web do
         invoke 'sync:assets:pack'
-        info 'copying assets to destination'
+        info "copying assets to destination #{destination}"
       end
     end
 

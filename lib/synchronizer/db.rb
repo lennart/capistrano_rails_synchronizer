@@ -1,9 +1,9 @@
 module DB
 
   def dump_db
-    _stage = fetch(:rails_env).to_s
+    _stage = fetch(:stage, nil).to_s
     cfg = read_db_config(_stage)
-    capture pg_dump_cmd(cfg)
+    execute pg_dump_cmd(cfg)
   end
 
   private
