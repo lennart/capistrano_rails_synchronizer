@@ -22,6 +22,12 @@ namespace :sync do
     invoke 'sync:db:copy' 
   end
 
+  desc 'just check hostname'
+  task :check_hostname do
+    on roles :web do
+      capture 'uptime'
+    end
+  end
   desc 'tars assets and copies the archive to destination stage'
   task :assets do
     invoke 'sync:assets:copy'
@@ -48,6 +54,8 @@ namespace :sync do
         invoke 'sync:db:dump'
         dump_db
         info "copying database dump from #{host} to other stage #{destination}"
+        #cmd = "scp #{sahred_path}/"
+        copy_db_cmd
       end
     end
 
