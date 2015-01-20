@@ -53,7 +53,7 @@ namespace :sync do
       on roles :db do |host|
         invoke 'sync:db:dump'
         dump_db
-        info "copying database dump from #{host} to other stage #{destination}"
+        info "copying database dump from #{host} to other stage #{fetch(:sync_db_to)}"
         #cmd = "scp #{sahred_path}/"
         copy_db_cmd
       end
@@ -75,7 +75,7 @@ namespace :sync do
     task :copy do
       on roles :web do
         invoke 'sync:assets:pack'
-        info "copying assets to destination #{destination}"
+        info "copying assets to destination #{fetch(:sync_assets_to)}"
       end
     end
 

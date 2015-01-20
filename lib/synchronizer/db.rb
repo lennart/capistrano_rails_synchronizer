@@ -7,18 +7,7 @@ module DB
   end
 
   def copy_db_cmd
-    puts "server: #{host} on stage: #{fetch(:stage)}"
-    on roles :web do
-      capture 'hostname'
-    end
-    set :stage, :production
-    debug "env: #{env}"
-    _dest_host = nil
-    debug fetch(:stage)
-    on roles :web do
-      _dest_host = capture 'hostname'
-    end
-    puts "server: #{_dest_host} on stage: #{fetch(:stage)}"
+    debug "not yet"
   end
 
   private

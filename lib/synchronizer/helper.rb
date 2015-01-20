@@ -1,6 +1,7 @@
 module Helper
 
   def destination
+    puts "deprecated... will vanish soon..."
     _stage =  fetch(:stage, nil).to_s
     if dest = fetch(:sync_to, nil)
       dest
