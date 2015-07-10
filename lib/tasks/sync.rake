@@ -17,17 +17,18 @@ end
 
 namespace :sync do
 
+  desc 'syncs db and assets to local'
+  task :local do
+    invoke 'sync:db:dump_to_local'
+    invoke 'sync:assets:copy_to_local'
+  end
+
   desc 'dumps the database and copies the dump to destination stage'
   task :db do
     invoke 'sync:db:copy' 
   end
 
-  desc 'just check hostname'
-  task :check_hostname do
-    on roles :web do
-      capture 'uptime'
-    end
-  end
+  
   desc 'tars assets and copies the archive to destination stage'
   task :assets do
     invoke 'sync:assets:copy'
@@ -41,10 +42,20 @@ namespace :sync do
 
   namespace :db do
 
-    #desc 'dump database'
+    desc 'dump database'
     task :dump do
       on roles :db do
         info 'dumping database'
+        dump_db
+        info 'finished dumping'
+      end
+    end
+
+    desc 'create db-dump and copy to local'
+    task :dump_to_local do
+      on roles :db do
+        invoke 'sync:db:dump'
+        copy_db_to_local
       end
     end
 
@@ -52,18 +63,8 @@ namespace :sync do
     task :copy do
       on roles :db do |host|
         invoke 'sync:db:dump'
-        dump_db
         info "copying database dump from #{host} to other stage #{fetch(:sync_db_to)}"
-        #cmd = "scp #{sahred_path}/"
         copy_db_cmd
-      end
-    end
-
-    desc 'restore database'
-    task :restore do
-      on roles :db do
-        invoke 'sync:db:copy'
-        info 'restoring database'
       end
     end
 
@@ -76,8 +77,18 @@ namespace :sync do
       on roles :web do
         invoke 'sync:assets:pack'
         info "copying assets to destination #{fetch(:sync_assets_to)}"
+        copy_assets_cmd
       end
     end
+
+    desc 'copy assets to local'
+    task :copy_to_local do
+      on roles :web do
+        invoke 'sync:assets:pack'
+        copy_assets_to_local
+      end
+    end
+
 
     desc 'pack, copy and unpack assets on other stage'
     task :unpack do

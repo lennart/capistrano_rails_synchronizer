@@ -2,12 +2,20 @@ module Assets
 
   def pack_assets
     on roles :web do
-      # somehow within path does not work
-      #
-      #within shared_path do
-      #  execute pack_assets_cmd
-      #end
       execute "cd #{shared_path}; #{pack_assets_cmd}"
+    end
+  end
+
+
+  def copy_assets_to_local
+    download! "#{fetch(:assets_archive_file)}", "#{fetch(:assets_archive_file).split('/')[-1]}"
+  end
+
+  def copy_assets_cmd
+    if dest = fetch(:sync_assets_to, nil)
+      scp_file(fetch(:assets_archive_file), dest)
+    else
+      raise "missing variable sync_assets_to"
     end
   end
 
@@ -15,6 +23,8 @@ module Assets
   private 
 
   def pack_assets_cmd
-    "tar cvfzp ./public-#{fetch(:stage)}.tgz ./public" 
+    assets_archive = "#{shared_path}/public-#{fetch(:stage)}.tgz"
+    set :assets_archive_file, assets_archive
+    "tar cvfzp #{assets_archive} ./public" 
   end
 end
