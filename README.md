@@ -4,6 +4,7 @@ capistrano tasks to synchronize your Rails app between stages
 expects postgres database
 
 expects ssh-agent for deployment-user in use
+make sure, ssh-agent is forwarded between configured stages by adding 'ForwardAgent yes' to your deploymentuser/.ssh/config
 
 add in Capfile:
 
