@@ -8,9 +8,6 @@ include Helper
 
 desc 'copies database and assets to destination'
 task :sync do
-  on roles :all do
-    info "synchronizing data to #{destination}"
-  end
   invoke 'sync:db:transfer'  
   invoke 'sync:assets:transfer'
 end
