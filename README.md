@@ -13,9 +13,12 @@ expects ssh-agent for deployment-user in use
 
 ## provides additional cap tasks:
 
+dump database, pack assets and download ...
 ``cap staging sync:local``
 
+dump database and download...
 ``cap staging sync:db:copy_to_local``
 
+pack assets and download...
 ``cap staging sync:assets:copy_to_local``
 
