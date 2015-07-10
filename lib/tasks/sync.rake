@@ -11,8 +11,8 @@ task :sync do
   on roles :all do
     info "synchronizing data to #{destination}"
   end
-  invoke 'sync:db:copy'  
-  invoke 'sync:assets:copy'
+  invoke 'sync:db:transfer'  
+  invoke 'sync:assets:transfer'
 end
 
 namespace :sync do
@@ -25,20 +25,20 @@ namespace :sync do
 
   desc 'dumps the database and copies the dump to destination stage'
   task :db do
-    invoke 'sync:db:copy' 
+    invoke 'sync:db:transfer' 
   end
 
   
   desc 'tars assets and copies the archive to destination stage'
   task :assets do
-    invoke 'sync:assets:copy'
+    invoke 'sync:assets:transfer'
   end
 
-  desc 'restores assets and database on destination host'
-  task :restore do
-    invoke 'sync:db:restore'
-    invoke 'sync:assets:unpack'
-  end
+  #desc 'restores assets and database on destination host'
+  #task :restore do
+  #  invoke 'sync:db:restore'
+  #  invoke 'sync:assets:unpack'
+  #end
 
   namespace :db do
 
@@ -60,7 +60,7 @@ namespace :sync do
     end
 
     desc 'copy database dump to other stage'
-    task :copy do
+    task :transfer do
       on roles :db do |host|
         invoke 'sync:db:dump'
         info "copying database dump from #{host} to other stage #{fetch(:sync_db_to)}"
@@ -73,7 +73,7 @@ namespace :sync do
   namespace :assets do
 
     desc 'copies asets to destination'
-    task :copy do
+    task :transfer do
       on roles :web do
         invoke 'sync:assets:pack'
         info "copying assets to destination #{fetch(:sync_assets_to)}"
@@ -90,13 +90,13 @@ namespace :sync do
     end
 
 
-    desc 'pack, copy and unpack assets on other stage'
-    task :unpack do
-      on roles :web do
-        invoke 'sync:assets:copy'
-        info 'unpacking assets'
-      end
-    end
+    #desc 'pack, copy and unpack assets on other stage'
+    #task :unpack do
+    #  on roles :web do
+    #    invoke 'sync:assets:copy'
+    #    info 'unpacking assets'
+    #  end
+    #end
 
     #desc 'pack assets'
     task :pack do

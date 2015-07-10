@@ -30,3 +30,4 @@ pack assets and download...
 
 ``cap staging sync:assets:copy_to_local``
 
+if you configured deploy/production
