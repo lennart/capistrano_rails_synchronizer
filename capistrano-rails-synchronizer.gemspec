@@ -1,6 +1,6 @@
 Gem::Specification.new do |gem|
   gem.name          = 'capistrano-rails-synchronizer'
-  gem.version       = '0.0.1.2'
+  gem.version       = '0.1.0'
   gem.authors       = ['rene paulokat']
   gem.email         = ['rene@so36.net']
   gem.description   = %q{Rails specific Capistrano tasks to synchonize stages}

@@ -2,7 +2,12 @@
 capistrano tasks to synchronize your Rails app between stages
 
 expects postgres database
+
 expects ssh-agent for deployment-user in use
+
+add in Capfile:
+
+require 'synchronizer' 
 
 ## adopt config/deploy/stage...
 
