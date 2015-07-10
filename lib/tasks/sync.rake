@@ -19,8 +19,8 @@ namespace :sync do
 
   desc 'syncs db and assets to local'
   task :local do
-    invoke 'sync:db:dump_to_local'
-    invoke 'sync:assets:copy_to_local'
+    invoke 'sync:db:to_local'
+    invoke 'sync:assets:to_local'
   end
 
   desc 'dumps the database and copies the dump to destination stage'
@@ -52,7 +52,7 @@ namespace :sync do
     end
 
     desc 'create db-dump and copy to local'
-    task :dump_to_local do
+    task :to_local do
       on roles :db do
         invoke 'sync:db:dump'
         copy_db_to_local
@@ -82,7 +82,7 @@ namespace :sync do
     end
 
     desc 'copy assets to local'
-    task :copy_to_local do
+    task :to_local do
       on roles :web do
         invoke 'sync:assets:pack'
         copy_assets_to_local

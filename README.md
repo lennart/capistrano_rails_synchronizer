@@ -24,10 +24,22 @@ dump database, pack assets and download ...
 
 dump database and download...
 
-``cap staging sync:db:copy_to_local``
+``cap staging sync:db:to_local``
 
 pack assets and download...
 
-``cap staging sync:assets:copy_to_local``
+``cap staging sync:assets:to_local``
 
-if you configured deploy/production
+dump/pack and transfer to configured target:
+
+``cap production sync:transfer``
+
+
+dump db and transfer to target:
+
+``cap production sync:db:transfer``
+
+
+pack assets and transfer to target:
+
+``cap production sync:assets:transfer``
