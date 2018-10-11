@@ -3,7 +3,7 @@ module DB
   def dump_db
     _stage = fetch(:stage, nil).to_s
     cfg = read_db_config(_stage)
-    execute pg_dump_cmd(cfg)
+    execute db_dump_cmd(cfg)
   end
 
   def copy_db_cmd
@@ -20,7 +20,7 @@ module DB
 
   private
 
-  def pg_dump_cmd(opts)
+  def db_dump_cmd(opts)
     adapter = opts.fetch('adapter')
     cmd = "echo 'WARNING: #{adapter} does not dump db!'"
 
