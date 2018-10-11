@@ -15,30 +15,31 @@ module DB
   end
 
   def copy_db_to_local
-   download! "#{fetch(:db_dump_file)}", "#{fetch(:db_dump_file).split('/')[-1]}"
+    download! "#{fetch(:db_dump_file)}", "#{fetch(:db_dump_file).split('/')[-1]}"
   end
 
   private
 
   def pg_dump_cmd(opts)
-    str =
-      case opts.fetch('adapter')
-      when 'postgresql'
-        db_dump_file = "#{shared_path}/#{opts.fetch('database')}.dump"
-        "PGPASSWORD=#{opts.fetch('password')} pg_dump -U #{opts.fetch('username')} -h #{opts.fetch('host')} -Fc #{opts.fetch('database')} -f #{db_dump_file}"
-        set :db_dump_file, db_dump_file
-      when 'sqlite3'
-        database_file = "#{shared_path}/#{opts.fetch('database')}"
-        database_name = File.basename(database_file,
-                                      File.extname(database_file))
-        db_dump_file = "#{shared_path}/#{database_name}.sqlite3"
-        "cp #{database_file} #{db_dump_file}"
-        set :db_dump_file, db_dump_file
-      end
+    adapter = opts.fetch('adapter')
+    cmd = "echo 'WARNING: #{adapter} does not dump db!'"
 
-    str
+    case adapter
+    when 'postgresql'
+      db_dump_file = "#{shared_path}/#{opts.fetch('database')}.dump"
+      cmd = "PGPASSWORD=#{opts.fetch('password')} pg_dump -U #{opts.fetch('username')} -h #{opts.fetch('host')} -Fc #{opts.fetch('database')} -f #{db_dump_file}"
+      set :db_dump_file, db_dump_file
+    when 'sqlite3'
+      database_file = "#{shared_path}/#{opts.fetch('database')}"
+      database_name = File.basename(database_file,
+                                    File.extname(database_file))
+      db_dump_file = "#{shared_path}/#{database_name}.sqlite3"
+      cmd = "cp #{database_file} #{db_dump_file}"
+      set :db_dump_file, db_dump_file
+    end
+
+    cmd
   end
-
 
   def read_db_config(stage)
     db_cfg = YAML::load(capture("cat #{current_path}/config/database.yml"))
