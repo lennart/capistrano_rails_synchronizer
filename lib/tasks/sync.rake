@@ -22,7 +22,7 @@ namespace :sync do
 
   desc 'dumps the database and copies the dump to destination stage'
   task :db do
-    invoke 'sync:db:transfer' 
+    invoke 'sync:db:transfer'
   end
 
   
