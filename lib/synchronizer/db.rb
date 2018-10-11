@@ -22,14 +22,23 @@ module DB
 
   def pg_dump_cmd(opts)
     db_dump_file = "#{shared_path}/#{opts.fetch('database')}.dump"
+    str = case opts.fetch('adapter')
+    when 'postgresql'
+      "PGPASSWORD=#{opts.fetch('password')} pg_dump -U #{opts.fetch('username')} -h #{opts.fetch('host')} -Fc #{opts.fetch('database')} -f #{db_dump_file}"
+    when 'sqlite3'
+      database_file = "#{shared_path}/#{opts.fetch('database')}"
+      database_name = File.basename(database_file,
+                                    File.extname(database_file))
+      "cp #{database_file} #{shared_path}/#{database_name}.sqlite3"
+    end
+
     set :db_dump_file, db_dump_file
-    str = "PGPASSWORD=#{opts.fetch('password')} pg_dump -U #{opts.fetch('username')} -h #{opts.fetch('host')} -Fc #{opts.fetch('database')} -f #{db_dump_file}"
     str
   end
 
 
   def read_db_config(stage)
-    db_cfg = YAML::load(capture("cat #{shared_path}/config/database.yml"))
+    db_cfg = YAML::load(capture("cat #{current_path}/config/database.yml"))
     db_cfg[stage]
   end
 end
