@@ -5,10 +5,9 @@ include DB
 include Assets
 include Helper
 
-
 desc 'copies database and assets to destination'
 task :sync do
-  invoke 'sync:db:transfer'  
+  invoke 'sync:db:transfer'
   invoke 'sync:assets:transfer'
 end
 
@@ -20,12 +19,20 @@ namespace :sync do
     invoke 'sync:assets:to_local'
   end
 
-  desc 'dumps the database and copies the dump to destination stage'
-  task :db do
-    invoke 'sync:db:transfer' 
+  namespace :local do
+    desc 'syncs db and assets to local (keep remote dumps)'
+    task :keep do
+      invoke 'sync:db:to_local:keep'
+      invoke 'sync:assets:to_local:keep'
+    end
   end
 
-  
+  desc 'dumps the database and copies the dump to destination stage'
+  task :db do
+    invoke 'sync:db:transfer'
+  end
+
+
   desc 'tars assets and copies the archive to destination stage'
   task :assets do
     invoke 'sync:assets:transfer'
@@ -53,6 +60,16 @@ namespace :sync do
       on roles :db do
         invoke 'sync:db:dump'
         copy_db_to_local
+        invoke 'sync:db:clean_dumps'
+      end
+    end
+
+    namespace :to_local do
+      desc 'create db-dump and copy to local (but keep remote dump)'
+      task :keep
+      on roles :db do
+        invoke 'sync:db:dump'
+        copy_db_to_local
       end
     end
 
@@ -65,6 +82,11 @@ namespace :sync do
       end
     end
 
+    task :clean_dumps do
+      on roles :db do
+        clean_db_dump
+      end
+    end
   end
 
   namespace :assets do
@@ -83,9 +105,17 @@ namespace :sync do
       on roles :web do
         invoke 'sync:assets:pack'
         copy_assets_to_local
+        invoke 'sync:assets:clean_dumps'
       end
     end
 
+    namespace :to_local do
+      desc 'copy assets to local (but keep artifacts remotely)'
+      task :keep do
+        invoke 'sync:assets:pack'
+        copy_assets_to_local
+      end
+    end
 
     #desc 'pack, copy and unpack assets on other stage'
     #task :unpack do
@@ -101,6 +131,11 @@ namespace :sync do
         pack_assets
       end
     end
+
+    task :clean_dumps do
+      on roles :web do
+        clean_assets_dump
+      end
+    end
   end
-  
 end

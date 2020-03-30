@@ -7,7 +7,6 @@ module Assets
     end
   end
 
-
   def copy_assets_to_local
     download! "#{fetch(:assets_archive_file)}", "#{fetch(:assets_archive_file).split('/')[-1]}"
     download! "#{fetch(:storage_archive_file)}", "#{fetch(:storage_archive_file).split('/')[-1]}"
@@ -21,7 +20,6 @@ module Assets
       raise "missing variable sync_assets_to"
     end
   end
-
 
   private
 
